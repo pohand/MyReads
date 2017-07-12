@@ -15,8 +15,8 @@ class SearchBooks extends Component {
         query: ''
     }
 
-    updateQuery = (query) => {
-        this.setState({ query: query })
+    updateQuery = (e) => {
+        this.setState({ query: e.target.value })
     }
     
     render() {
@@ -42,7 +42,8 @@ class SearchBooks extends Component {
                     >Close</Link>
                     <div className="search-books-input-wrapper">
                         <input type="text"
-                        onChange={(event) => this.updateQuery(event.target.value)} 
+                        value={this.state.query}
+                        onChange={this.updateQuery} 
                         placeholder="Search by title or author" />
                     </div>
                 </div>
