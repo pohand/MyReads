@@ -1,65 +1,68 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
-class Book extends Component {
-    static propTypes = {
-        book: PropTypes.object.isRequired,
-        onUpdateShelf: PropTypes.func.isRequired
-    }
+function Book(props) {
+    const options = [
+        {
+            name: 'Currently Reading',
+            value: 'currentlyReading',
+        },
+        {
+            name: 'Want to Read',
+            value: 'wantToRead',
+        },
+        {
+            name: 'Read',
+            value: 'read',
+        }
+    ]
 
-    state = {
-        book: this.props.book,
-        value: this.props.shelf,
-        options: [
-            {
-                name: 'Currently Reading',
-                value: 'currentlyReading',
-            },
-            {
-                name: 'Want to Read',
-                value: 'wantToRead',
-            },
-            {
-                name: 'Read',
-                value: 'read',
-            }
-        ]
-    }
+    const createItem = (item, key) =>
+        <option
+            key={key}
+            value={item.value}
+        >
+            {item.name}
+        </option>
 
-    render() {
-        const { onUpdateShelf } = this.props
+    const createAuthors = (author, key) =>
+        <div className="book-authors" key={key}>
+            {author}
+        </div>
 
-        const createItem = (item, key) =>
-            <option
-                key={key}
-                value={item.value}
-            >
-                {item.name}
-            </option>
+    let showingAuthors
 
-        return (
-            <div className="book">
-                <div className="book-top">
-                    <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.state.book.imageLinks.thumbnail})` }}></div>
-                    <div className="book-shelf-changer">
-                        <select
-                            onChange={event => onUpdateShelf(this.state.book, event.target.value)}
-                            value={this.state.book.shelf}
-                        >
-                            <option value='none' disabled>Move to...</option>
-                            {this.state.options.map(createItem)}
-                        </select>
-                    </div>
-                </div>
-                <div className="book-title">{this.state.book.title}</div>
-                <div className="book-authors">
-                    {this.state.book.authors.map((author) => (
-                        author
-                    ))}
+        if (props.book.authors) {
+            showingAuthors = props.book.authors
+        }
+        else {
+            showingAuthors = []
+        }
+
+    return (
+        <div className="book">
+            <div className="book-top">
+                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${props.book.imageLinks.thumbnail})` }}></div>
+                <div className="book-shelf-changer">
+                    <select
+                        onChange={event => props.onUpdateShelf(props.book, event.target.value)}
+                        value={props.book.shelf}
+                    >
+                        <option value='none' disabled>Move to...</option>
+
+                        {options.map(createItem)}
+                    </select>
                 </div>
             </div>
-        )
-    }
+            <div className="book-title">{props.book.title}</div>
+            {showingAuthors.map(createAuthors)}
+        </div>
+    )
+}
+
+Book.PropTypes = {
+    book: PropTypes.object.isRequired,
+    onUpdateShelf: PropTypes.func.isRequired
 }
 
 export default Book
