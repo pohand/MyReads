@@ -7,7 +7,7 @@ function ListBooks(props) {
         <ol className="books-grid">
             {props.books.map((book) => (
                 <li key={book.id} >
-                    <Book book={book} onUpdateShelf={props.onUpdateShelf} />
+                    <Book book={book} onUpdateShelf={props.onUpdateShelf} search={props.search} />
                 </li>
             ))}
 

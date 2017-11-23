@@ -14,6 +14,10 @@ function Book(props) {
         {
             name: 'Read',
             value: 'read',
+        },
+        {
+            name: 'None',
+            value: 'none',
         }
     ]
 
@@ -32,21 +36,34 @@ function Book(props) {
 
     let showingAuthors
 
-        if (props.book.authors) {
-            showingAuthors = props.book.authors
-        }
-        else {
-            showingAuthors = []
-        }
+    if (props.book.authors) {
+        showingAuthors = props.book.authors
+    }
+    else {
+        showingAuthors = []
+    }
+
+    let showingThumnail
+
+    if (props.book.imageLinks) {
+        showingThumnail = props.book.imageLinks.thumbnail
+    }
+    else {
+        showingThumnail = ''
+    }
+
+    function checkShelf () {
+        return props.search === true ? 'none' : props.book.shelf;
+    }
 
     return (
         <div className="book">
             <div className="book-top">
-                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${props.book.imageLinks.thumbnail})` }}></div>
+                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${showingThumnail})` }}></div>
                 <div className="book-shelf-changer">
                     <select
                         onChange={event => props.onUpdateShelf(props.book, event.target.value)}
-                        value={props.book.shelf}
+                        value={checkShelf()}
                     >
                         <option value='none' disabled>Move to...</option>
 
@@ -62,7 +79,8 @@ function Book(props) {
 
 Book.PropTypes = {
     book: PropTypes.object.isRequired,
-    onUpdateShelf: PropTypes.func.isRequired
+    onUpdateShelf: PropTypes.func.isRequired,
+    search: PropTypes.bool.isRequired
 }
 
 export default Book

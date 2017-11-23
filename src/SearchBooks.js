@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import ListBooks from './ListBooks'
-import escapeRegExp from 'escape-string-regexp'
+//import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by'
+import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
     static propTypes = {
@@ -12,47 +13,51 @@ class SearchBooks extends Component {
     }
 
     state = {
-        query: ''
+        query: '',
+        searchingBooks: []        
     }
 
-    updateQuery = (e) => {
-        this.setState({ query: e.target.value })
+    updateQuery = (e) => {        
+        let searchText = e.target.value
+        let books = []
+        if (searchText === undefined ||searchText === '') {
+            this.setState({query: searchText, searchingBooks: []})
+        } else {
+            BooksAPI.search(searchText, 20).then((results) => {
+                if (results.length >= 1) {
+                    results.sort(sortBy('title'))
+                    books = results
+                    this.setState({query: searchText, searchingBooks: books})
+                } else {
+                    this.setState({query: searchText, searchingBooks: []})    
+                }
+            })
+        }
     }
     
     render() {
         const { onUpdateStatus } = this.props
-        let showingBooks
-
-        if (this.state.query) {
-            const match = new RegExp(escapeRegExp(this.state.query), 'i')
-            showingBooks = this.props.books.filter((book) => match.test(book.title))
-        }
-        else {
-            showingBooks = []
-        }
-
-        showingBooks.sort(sortBy('title'))
 
         return (
             <div className="search-books">
                 <div className="search-books-bar">
-                    <Link 
-                        className="close-search" 
+                    <Link
+                        className="close-search"
                         to='/'
                     >Close</Link>
                     <div className="search-books-input-wrapper">
                         <input type="text"
-                        value={this.state.query}
-                        onChange={this.updateQuery} 
-                        placeholder="Search by title or author" />
+                            //value={this.state.query}
+                            onChange={this.updateQuery}
+                            placeholder="Search by title or author" />
                     </div>
                 </div>
                 <div className="search-books-results">
-                    <ListBooks books={showingBooks} onUpdateShelf={onUpdateStatus}/>
+                    <ListBooks books={this.state.searchingBooks} onUpdateShelf={onUpdateStatus} search={true} />
                 </div>
             </div>
 
-            
+
         )
     }
 }
